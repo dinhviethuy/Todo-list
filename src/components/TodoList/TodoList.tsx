@@ -42,6 +42,7 @@ function TodoList() {
                   <Th>Create At</Th>
                   <Th>Update At</Th>
                   <Th>Status</Th>
+                  <Th>Time Finish</Th>
                   <Th>Action</Th>
                 </Tr>
               </Thead>
@@ -60,6 +61,13 @@ function TodoList() {
                         <Badge colorScheme={item.status ? 'green' : 'red'}>
                           {item.status ? 'Đã hoàn thành' : 'Chưa hoàn thành'}
                         </Badge>
+                      </Td>
+                      <Td>
+                        {item.status ? (
+                          item.TimeFinish
+                        ) : (
+                          <Badge colorScheme={'orange'}>Đang trong tính tiến trình</Badge>
+                        )}
                       </Td>
                       <Td>
                         <Box className='flex gap-3 flex-wrap'>

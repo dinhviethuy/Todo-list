@@ -26,6 +26,7 @@ export type Payload = {
   CreateAt: string
   UpdateAt: string
   status: boolean
+  TimeFinish?: string
 }
 
 export interface Action {
