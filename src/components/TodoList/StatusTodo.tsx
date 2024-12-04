@@ -1,8 +1,8 @@
 import { CheckIcon, RepeatClockIcon } from '@chakra-ui/icons'
 import { IconButton, Tooltip, useToast } from '@chakra-ui/react'
-import { Payload } from '../../types/action.type'
 import { useDispatch } from 'react-redux'
 import { getDate } from '../../utils/getDate'
+import { Payload } from '../../constants/types'
 
 interface IProps {
   todo: Payload

@@ -2,19 +2,12 @@ import { Box, Button, TabList, TabPanel, TabPanels, Tabs, useMultiStyleConfig, u
 import TodoList from './components/TodoList/TodoList'
 import { forwardRef } from 'react'
 import { AiOutlineDashboard, AiOutlineHome } from 'react-icons/ai'
-
-interface CustomTabProps {
-  children: React.ReactNode
-}
+import { CustomTabProps } from './constants/types'
 
 function App() {
   const CustomTab = forwardRef<HTMLButtonElement, CustomTabProps>((props, ref) => {
-    // 1. Reuse the `useTab` hook
     const tabProps = useTab({ ...props, ref })
-
-    // 2. Hook into the Tabs `size`, `variant`, props
     const styles = useMultiStyleConfig('Tabs', tabProps)
-
     return (
       <Button __css={styles.tab} {...tabProps} className='flex items-center w-1/2 justify-center'>
         {tabProps.children}

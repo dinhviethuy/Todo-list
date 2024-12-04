@@ -21,24 +21,13 @@ import {
   VStack
 } from '@chakra-ui/react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Payload } from '../../types/action.type'
 import { todoSchema } from '../../schema/todo.schema'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { getDate } from '../../utils/getDate'
 import { useState } from 'react'
-import { RootState } from './TodoList'
 import { EditTo } from '../../action/TodoAction'
-
-type Edit = {
-  title: string
-  description?: string
-}
-
-type disable = {
-  disable: boolean
-  loading: boolean
-}
+import { Edit, Payload, RootState, TDisable } from '../../constants/types'
 
 type IProps = {
   id: number
@@ -49,7 +38,7 @@ function EditTodo(props: IProps) {
   const data = useSelector((state: RootState) => state.TodoReducer)
   const TodoItem: Payload = data.find((item) => item.id === id) as Payload
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [disable, setDisable] = useState<disable>({ disable: false, loading: false })
+  const [disable, setDisable] = useState<TDisable>({ disable: false, loading: false })
   const toast = useToast()
   const {
     register,
@@ -99,9 +88,6 @@ function EditTodo(props: IProps) {
     <>
       <Box className='self-start'>
         <Tooltip label='Edit todo'>
-          {/* <Button size='sm' colorScheme='blue' onClick={onOpen}>
-            <EditIcon />
-          </Button> */}
           <IconButton
             variant='outline'
             colorScheme='teal'

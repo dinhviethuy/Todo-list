@@ -19,37 +19,27 @@ import {
 } from '@chakra-ui/react'
 import { useDispatch } from 'react-redux'
 import { Add } from '../../action/TodoAction'
-import { Payload } from '../../types/action.type'
 import { todoSchema } from '../../schema/todo.schema'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { getDate } from '../../utils/getDate'
 import { useState } from 'react'
-
-type Add = {
-  title: string
-  description?: string
-}
-
-type disable = {
-  disable: boolean
-  loading: boolean
-}
+import { Payload, TAdd, TDisable } from '../../constants/types'
 
 function AddNew() {
   const { isOpen, onOpen, onClose } = useDisclosure()
-  const [disable, setDisable] = useState<disable>({ disable: false, loading: false })
+  const [disable, setDisable] = useState<TDisable>({ disable: false, loading: false })
   const toast = useToast()
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors }
-  } = useForm<Add>({
+  } = useForm<TAdd>({
     resolver: yupResolver(todoSchema)
   })
   const dispatch = useDispatch()
-  const handleAddNew: SubmitHandler<Add> = (AddNew: Add) => {
+  const handleAddNew: SubmitHandler<TAdd> = (AddNew: TAdd) => {
     setDisable({ disable: true, loading: true })
     const date = getDate()
     const todo: Payload = {

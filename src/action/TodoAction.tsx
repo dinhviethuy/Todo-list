@@ -1,4 +1,4 @@
-import { Action, Payload } from '../types/action.type'
+import { Action, Payload } from '../constants/types'
 
 type AddAction = Omit<Action, 'id'>
 type EditAction = Omit<Action, 'id'>

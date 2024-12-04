@@ -15,14 +15,10 @@ import {
 import { Badge } from '@chakra-ui/react'
 import AddNew from './AddNew'
 import { useSelector } from 'react-redux'
-import { Payload } from '../../types/action.type'
 import EditTodo from './EditTodo'
 import DeleteTo from './DeleteTodo'
 import Status from './StatusTodo'
-
-export interface RootState {
-  TodoReducer: Payload[]
-}
+import { RootState } from '../../constants/types'
 
 function TodoList() {
   const data = useSelector((state: RootState) => state.TodoReducer)
