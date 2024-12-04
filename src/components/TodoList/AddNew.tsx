@@ -114,6 +114,7 @@ function AddNew() {
                     {...register('description')}
                     className='border border-gray-300 rounded-md p-2'
                     disabled={disable.disable}
+                    rows={8}
                   />
                 </FormControl>
                 <ModalFooter>

@@ -138,6 +138,7 @@ function EditTodo(props: IProps) {
                       className='border border-gray-300 rounded-md p-2'
                       disabled={disable.disable}
                       defaultValue={TodoItem?.description}
+                      rows={8}
                     />
                   </FormControl>
                   <ModalFooter>
