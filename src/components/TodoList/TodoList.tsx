@@ -65,12 +65,14 @@ function TodoList() {
                           {item.status ? 'Đã hoàn thành' : 'Chưa hoàn thành'}
                         </Badge>
                       </Td>
-                      <Td className='flex gap-3 flex-wrap'>
-                        <Box className='self-start'>
-                          <Status todo={item} />
+                      <Td>
+                        <Box className='flex gap-3 flex-wrap'>
+                          <Box className='self-start'>
+                            <Status todo={item} />
+                          </Box>
+                          <DeleteTo id={item.id} />
+                          <EditTodo id={item.id} />
                         </Box>
-                        <DeleteTo id={item.id} />
-                        <EditTodo id={item.id} />
                       </Td>
                     </Tr>
                   ))}
