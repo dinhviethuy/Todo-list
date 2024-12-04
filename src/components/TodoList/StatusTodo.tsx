@@ -46,7 +46,7 @@ export const Status = (props: IProps) => {
   }
   return (
     <>
-      <Tooltip label={status ? 'Finish' : 'Undo'}>
+      <Tooltip label={status ? 'Undo' : 'Finish'}>
         {status ? (
           <IconButton
             variant='solid'
