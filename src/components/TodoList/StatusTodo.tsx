@@ -1,32 +1,81 @@
-import { CheckIcon, RepeatClockIcon } from '@chakra-ui/icons'
-import { IconButton, Tooltip, useToast } from '@chakra-ui/react'
+import {
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogCloseButton,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogOverlay,
+  Button,
+  IconButton,
+  Tooltip,
+  useDisclosure,
+  useToast
+} from '@chakra-ui/react'
 import { useDispatch } from 'react-redux'
 import { getDate } from '../../utils/getDate'
 import { Payload } from '../../constants/types'
 import { getTimeFinish } from '../../utils/getTimeFinish'
-
+import { FaCirclePlay } from 'react-icons/fa6'
+import { MarkCompleted, StartTimer } from '../../action/TodoAction'
+import { CheckIcon } from '@chakra-ui/icons'
+import { useRef } from 'react'
 interface IProps {
   todo: Payload
 }
 
 export const Status = (props: IProps) => {
-  const { status, CreateAt } = props.todo
+  const { status, timeStart, timerStarted, timerExpired, title } = props.todo
   const dispatch = useDispatch()
   const toast = useToast()
+  const { isOpen: isOpenFinish, onOpen: onOpenFinish, onClose: onCloseFinish } = useDisclosure()
+  const cancelRef = useRef(null)
+  const { isOpen: isOpenPlay, onOpen: onOpenPlay, onClose: onClosePlay } = useDisclosure()
+  const cancelRefPlay = useRef(null)
+  const startTimer = () => {
+    const time = timeStart === '' ? getDate() : timeStart
+    const updatedTime = getDate()
+    const todo: Payload = {
+      ...props.todo,
+      timerStarted: true,
+      status: false,
+      timeStart: time,
+      UpdateAt: updatedTime
+    }
+    try {
+      dispatch(StartTimer(todo, true))
+      toast({
+        title: 'Start Timer Success',
+        description: "We've started your timer.",
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+        position: 'top'
+      })
+    } catch (error) {
+      console.error(error)
+      toast({
+        title: 'Start Timer Error',
+        description: "We've encountered an error while starting your timer.",
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+        position: 'top'
+      })
+    }
+  }
   const handleStatus = () => {
     const date = getDate()
-    const timeFinish = getTimeFinish(CreateAt, date)
+    const timeFinish = getTimeFinish(timeStart, date)
     const todo: Payload = {
       ...props.todo,
       UpdateAt: date,
+      timerStarted: false,
       TimeFinish: timeFinish,
       status: !status
     }
     try {
-      dispatch({
-        type: 'EDIT',
-        payload: todo
-      })
+      dispatch(MarkCompleted(todo))
       toast({
         title: !status ? 'Finish Success' : 'Undo Success',
         description: "We've updated your todo.",
@@ -49,26 +98,81 @@ export const Status = (props: IProps) => {
   }
   return (
     <>
-      <Tooltip label={status ? 'Undo' : 'Finish'}>
-        {status ? (
-          <IconButton
-            variant='solid'
-            aria-label='Undo todo'
-            icon={<RepeatClockIcon />}
-            size='sm'
-            onClick={handleStatus}
-          />
-        ) : (
+      <Tooltip label={timerStarted ? 'Finish' : 'Play'}>
+        {timerStarted ? (
           <IconButton
             variant='solid'
             colorScheme='green'
-            aria-label='Undo todo'
+            aria-label='Finish todo'
             icon={<CheckIcon />}
             size='sm'
-            onClick={handleStatus}
+            onClick={onOpenFinish}
           />
+        ) : (
+          !timerExpired &&
+          !status && (
+            <IconButton variant='solid' aria-label='Play todo' icon={<FaCirclePlay />} size='sm' onClick={onOpenPlay} />
+          )
         )}
       </Tooltip>
+      <AlertDialog
+        motionPreset='slideInBottom'
+        leastDestructiveRef={cancelRef}
+        onClose={onCloseFinish}
+        isOpen={isOpenFinish}
+        isCentered
+      >
+        <AlertDialogOverlay />
+        <AlertDialogContent>
+          <AlertDialogHeader>Cofirm?</AlertDialogHeader>
+          <AlertDialogCloseButton />
+          <AlertDialogBody>{`You want to ${status ? 'undo' : 'finish'} this todo ${title}?`}</AlertDialogBody>
+          <AlertDialogFooter>
+            <Button ref={cancelRef} onClick={onCloseFinish}>
+              No
+            </Button>
+            <Button
+              colorScheme='green'
+              ml={3}
+              onClick={() => {
+                onCloseFinish()
+                handleStatus()
+              }}
+            >
+              Yes
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog
+        motionPreset='slideInBottom'
+        leastDestructiveRef={cancelRefPlay}
+        onClose={onClosePlay}
+        isOpen={isOpenPlay}
+        isCentered
+      >
+        <AlertDialogOverlay />
+        <AlertDialogContent>
+          <AlertDialogHeader>Cofirm?</AlertDialogHeader>
+          <AlertDialogCloseButton />
+          <AlertDialogBody>{`You want to play this todo ${title}?`}</AlertDialogBody>
+          <AlertDialogFooter>
+            <Button ref={cancelRefPlay} onClick={onClosePlay}>
+              No
+            </Button>
+            <Button
+              colorScheme='green'
+              ml={3}
+              onClick={() => {
+                onClosePlay()
+                startTimer()
+              }}
+            >
+              Play
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }

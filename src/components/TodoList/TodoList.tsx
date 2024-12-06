@@ -19,6 +19,7 @@ import EditTodo from './EditTodo'
 import DeleteTo from './DeleteTodo'
 import Status from './StatusTodo'
 import { RootState } from '../../constants/types'
+import TimerStart from '../TimerStart/TimerStart'
 
 function TodoList() {
   const data = useSelector((state: RootState) => state.TodoReducer)
@@ -58,24 +59,28 @@ function TodoList() {
                       <Td>{item.CreateAt}</Td>
                       <Td>{item.UpdateAt}</Td>
                       <Td width={300}>
-                        <Badge colorScheme={item.status ? 'green' : 'red'}>
-                          {item.status ? 'Đã hoàn thành' : 'Chưa hoàn thành'}
+                        <Badge colorScheme={item.status ? 'green' : item.timerExpired ? 'red' : 'orange'}>
+                          {item.status ? 'Đã hoàn thành' : item.timerExpired ? 'Hết giờ' : 'Chưa hoàn thành'}
                         </Badge>
                       </Td>
                       <Td>
-                        {item.status ? (
-                          item.TimeFinish
+                        {item.timerStarted ? (
+                          <TimerStart todo={item} />
+                        ) : item.status ? (
+                          `Đã hoàn thành trong ${item.TimeFinish}`
                         ) : (
-                          <Badge colorScheme={'orange'}>Đang trong tính tiến trình</Badge>
+                          `Thời gian còn lại: ${item.time.hour.toString().padStart(2, '0')}:${item.time.minute.toString().padStart(2, '0')}:${item.time.second.toString().padStart(2, '0')}`
                         )}
                       </Td>
                       <Td>
                         <Box className='flex gap-3 flex-wrap'>
-                          <Box className='self-start'>
-                            <Status todo={item} />
-                          </Box>
+                          {!item.status && !item.timerExpired && (
+                            <Box className='self-start'>
+                              <Status todo={item} />
+                            </Box>
+                          )}
                           <DeleteTo id={item.id} />
-                          <EditTodo id={item.id} />
+                          <EditTodo id={item.id} disableProps={item.timerExpired || item.status} />
                         </Box>
                       </Td>
                     </Tr>

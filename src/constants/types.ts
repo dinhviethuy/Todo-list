@@ -3,6 +3,10 @@ import { ReactNode } from 'react'
 export type Edit = {
   title: string
   description?: string
+  time: {
+    hour: number
+    minute: number
+  }
 }
 
 export type TDisable = {
@@ -13,6 +17,10 @@ export type TDisable = {
 export type TAdd = {
   title: string
   description?: string
+  time: {
+    hour: number
+    minute: number
+  }
 }
 
 export interface CustomTabProps {
@@ -27,12 +35,22 @@ export type Payload = {
   UpdateAt: string
   status: boolean
   TimeFinish?: string
+  time: {
+    hour: number
+    minute: number
+    second: number
+  }
+  timerStarted: boolean
+  timerPaused: boolean
+  timerExpired: boolean
+  timeStart: string
 }
 
 export interface Action {
   type: string
   payload: Payload
   id: number
+  start?: boolean
 }
 
 export interface RootState {
