@@ -4,7 +4,7 @@ type AddAction = Omit<Action, 'id'>
 type EditAction = Omit<Action, 'id'>
 type DeleteAction = Omit<Action, 'payload'>
 type StartTimerAction = Omit<Action, 'id'> & { start: boolean; payload: Payload; type: string }
-type StopTimerAction = Omit<Action, 'payload'>
+type StopTimerAction = Omit<Action, 'id'> & { payload: Payload; type: string }
 type MarkCompletedAction = Omit<Action, 'id'>
 type TimerExpiredAction = Omit<Action, 'payload'>
 
@@ -37,10 +37,10 @@ export const StartTimer = (todo: Payload, start: boolean): StartTimerAction => {
   }
 }
 
-export const StopTimer = (id: number): StopTimerAction => {
+export const StopTimer = (todo: Payload): StopTimerAction => {
   return {
     type: 'STOP_TIMER',
-    id: id
+    payload: todo
   }
 }
 

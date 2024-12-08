@@ -6,6 +6,7 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogOverlay,
+  Box,
   Button,
   IconButton,
   Tooltip,
@@ -16,8 +17,8 @@ import { useDispatch } from 'react-redux'
 import { getDate } from '../../utils/getDate'
 import { Payload } from '../../constants/types'
 import { getTimeFinish } from '../../utils/getTimeFinish'
-import { FaCirclePlay } from 'react-icons/fa6'
-import { MarkCompleted, StartTimer } from '../../action/TodoAction'
+import { FaCirclePause, FaCirclePlay } from 'react-icons/fa6'
+import { MarkCompleted, StartTimer, StopTimer } from '../../action/TodoAction'
 import { CheckIcon } from '@chakra-ui/icons'
 import { useRef } from 'react'
 interface IProps {
@@ -25,25 +26,59 @@ interface IProps {
 }
 
 export const Status = (props: IProps) => {
-  const { status, timeStart, timerStarted, timerExpired, title } = props.todo
+  const { status, timeStart, timerStarted, timerExpired, title, timerPaused } = props.todo
   const dispatch = useDispatch()
   const toast = useToast()
   const { isOpen: isOpenFinish, onOpen: onOpenFinish, onClose: onCloseFinish } = useDisclosure()
   const cancelRef = useRef(null)
   const { isOpen: isOpenPlay, onOpen: onOpenPlay, onClose: onClosePlay } = useDisclosure()
   const cancelRefPlay = useRef(null)
+  const { isOpen: isOpenPause, onOpen: onOpenPause, onClose: onClosePause } = useDisclosure()
+  const cancelRefPause = useRef(null)
   const startTimer = () => {
     const time = timeStart === '' ? getDate() : timeStart
     const updatedTime = getDate()
     const todo: Payload = {
       ...props.todo,
       timerStarted: true,
+      timerPaused: false,
       status: false,
       timeStart: time,
       UpdateAt: updatedTime
     }
     try {
       dispatch(StartTimer(todo, true))
+      toast({
+        title: 'Start Timer Success',
+        description: "We've started your timer.",
+        status: 'success',
+        duration: 2000,
+        isClosable: true,
+        position: 'top'
+      })
+    } catch (error) {
+      console.error(error)
+      toast({
+        title: 'Start Timer Error',
+        description: "We've encountered an error while starting your timer.",
+        status: 'error',
+        duration: 2000,
+        isClosable: true,
+        position: 'top'
+      })
+    }
+  }
+  const pauseTimer = () => {
+    const updatedTime = getDate()
+    const todo: Payload = {
+      ...props.todo,
+      timerStarted: false,
+      timerPaused: true,
+      status: false,
+      UpdateAt: updatedTime
+    }
+    try {
+      dispatch(StopTimer(todo))
       toast({
         title: 'Start Timer Success',
         description: "We've started your timer.",
@@ -99,15 +134,37 @@ export const Status = (props: IProps) => {
   return (
     <>
       <Tooltip label={timerStarted ? 'Finish' : 'Play'}>
-        {timerStarted ? (
-          <IconButton
-            variant='solid'
-            colorScheme='green'
-            aria-label='Finish todo'
-            icon={<CheckIcon />}
-            size='sm'
-            onClick={onOpenFinish}
-          />
+        {timerStarted || timerPaused ? (
+          <>
+            {timerPaused && (
+              <IconButton
+                variant='solid'
+                aria-label='Play todo'
+                icon={<FaCirclePlay />}
+                size='sm'
+                onClick={onOpenPlay}
+              />
+            )}
+            {timerStarted && (
+              <Box className='flex gap-3 flex-wrap'>
+                <IconButton
+                  variant='solid'
+                  colorScheme='green'
+                  aria-label='Finish todo'
+                  icon={<CheckIcon />}
+                  size='sm'
+                  onClick={onOpenFinish}
+                />
+                <IconButton
+                  variant='solid'
+                  aria-label='Pause todo'
+                  icon={<FaCirclePause />}
+                  size='sm'
+                  onClick={onOpenPause}
+                />
+              </Box>
+            )}
+          </>
         ) : (
           !timerExpired &&
           !status && (
@@ -124,7 +181,7 @@ export const Status = (props: IProps) => {
       >
         <AlertDialogOverlay />
         <AlertDialogContent>
-          <AlertDialogHeader>Cofirm?</AlertDialogHeader>
+          <AlertDialogHeader>Confirm?</AlertDialogHeader>
           <AlertDialogCloseButton />
           <AlertDialogBody>{`You want to ${status ? 'undo' : 'finish'} this todo ${title}?`}</AlertDialogBody>
           <AlertDialogFooter>
@@ -153,7 +210,7 @@ export const Status = (props: IProps) => {
       >
         <AlertDialogOverlay />
         <AlertDialogContent>
-          <AlertDialogHeader>Cofirm?</AlertDialogHeader>
+          <AlertDialogHeader>Confirm?</AlertDialogHeader>
           <AlertDialogCloseButton />
           <AlertDialogBody>{`You want to play this todo ${title}?`}</AlertDialogBody>
           <AlertDialogFooter>
@@ -169,6 +226,35 @@ export const Status = (props: IProps) => {
               }}
             >
               Play
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+      <AlertDialog
+        motionPreset='slideInBottom'
+        leastDestructiveRef={cancelRefPause}
+        onClose={onClosePause}
+        isOpen={isOpenPause}
+        isCentered
+      >
+        <AlertDialogOverlay />
+        <AlertDialogContent>
+          <AlertDialogHeader>Confirm?</AlertDialogHeader>
+          <AlertDialogCloseButton />
+          <AlertDialogBody>{`You want to pause this todo ${title}?`}</AlertDialogBody>
+          <AlertDialogFooter>
+            <Button ref={cancelRefPause} onClick={onClosePause}>
+              No
+            </Button>
+            <Button
+              colorScheme='green'
+              ml={3}
+              onClick={() => {
+                onClosePause()
+                pauseTimer()
+              }}
+            >
+              Pause
             </Button>
           </AlertDialogFooter>
         </AlertDialogContent>

@@ -33,7 +33,7 @@ import { todoSchema } from '../../schema/todo.schema'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { getDate } from '../../utils/getDate'
-import { useRef, useState } from 'react'
+import { memo, useRef, useState } from 'react'
 import { EditTo } from '../../action/TodoAction'
 import { Edit, Payload, RootState, TDisable } from '../../constants/types'
 import TimePicker from '../TimePicker/TimePicker'
@@ -49,6 +49,7 @@ function EditTodo(props: IProps) {
   const [currentTodoItem, setCurrentTodoItem] = useState<Payload>(originalTodoItem)
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { isOpen: isOpenChild, onOpen: onOpenChild, onClose: onCloseChild } = useDisclosure()
+  const { isOpen: isOpenUpdate, onOpen: onOpenUpdate, onClose: onCloseUpdate } = useDisclosure()
   const [disable, setDisable] = useState<TDisable>({ disable: false, loading: false })
   const toast = useToast()
   const cancelRef = useRef(null)
@@ -73,15 +74,16 @@ function EditTodo(props: IProps) {
 
   const dispatch = useDispatch()
 
-  const handleAddNew: SubmitHandler<Edit> = (Edit: Edit) => {
+  const handleAddNew: SubmitHandler<Edit> = (edit: Edit) => {
     setDisable({ disable: true, loading: true })
     const date = getDate()
-    const { hour, minute } = Edit.time
+    const { hour, minute } = edit.time
     const second =
       hour === currentTodoItem.time.hour && minute === currentTodoItem.time.minute ? currentTodoItem.time.second : 59
     const updatedTodo: Payload = {
       ...currentTodoItem,
-      ...Edit,
+      timerStarted: false,
+      ...edit,
       UpdateAt: date,
       time: {
         hour,
@@ -135,7 +137,7 @@ function EditTodo(props: IProps) {
                   minute: currentTodoItem.time.minute
                 }
               })
-              if (currentTodoItem.timerStarted) onOpenChild()
+              if (originalTodoItem.timerStarted) onOpenChild()
               else onOpen()
             }}
             size='sm'
@@ -147,7 +149,13 @@ function EditTodo(props: IProps) {
             <ModalHeader>Edit todo</ModalHeader>
             <ModalCloseButton />
             <ModalBody>
-              <form onSubmit={handleSubmit(handleAddNew)}>
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault()
+                  console.log(e)
+                  handleSubmit(handleAddNew)()
+                }}
+              >
                 <VStack spacing={4} align='stretch'>
                   <FormControl isRequired isInvalid={!!errors.title}>
                     <FormLabel>Title</FormLabel>
@@ -187,7 +195,7 @@ function EditTodo(props: IProps) {
                     </Box>
                   </FormControl>
                   <ModalFooter>
-                    <Button colorScheme='blue' isLoading={disable.loading} type='submit'>
+                    <Button colorScheme='blue' isLoading={disable.loading} onClick={onOpenUpdate}>
                       Update
                     </Button>
                     <Button colorScheme='red' ml={3} onClick={onClose}>
@@ -229,8 +237,38 @@ function EditTodo(props: IProps) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      <AlertDialog
+        motionPreset='slideInBottom'
+        leastDestructiveRef={cancelRef}
+        onClose={onCloseUpdate}
+        isOpen={isOpenUpdate}
+        isCentered
+      >
+        <AlertDialogOverlay />
+        <AlertDialogContent>
+          <AlertDialogHeader>Confirm</AlertDialogHeader>
+          <AlertDialogCloseButton />
+          <AlertDialogBody>Are you sure you want to update?</AlertDialogBody>
+          <AlertDialogFooter>
+            <Button ref={cancelRef} onClick={onCloseUpdate}>
+              No
+            </Button>
+            <Button
+              colorScheme='red'
+              ml={3}
+              onClick={() => {
+                onCloseUpdate()
+                onClose()
+                handleSubmit(handleAddNew)()
+              }}
+            >
+              Yes
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   )
 }
 
-export default EditTodo
+export default memo(EditTodo)

@@ -59,8 +59,18 @@ function TodoList() {
                       <Td>{item.CreateAt}</Td>
                       <Td>{item.UpdateAt}</Td>
                       <Td width={300}>
-                        <Badge colorScheme={item.status ? 'green' : item.timerExpired ? 'red' : 'orange'}>
-                          {item.status ? 'Đã hoàn thành' : item.timerExpired ? 'Hết giờ' : 'Chưa hoàn thành'}
+                        <Badge
+                          colorScheme={
+                            item.status ? 'green' : item.timerExpired ? 'red' : item.timerPaused ? 'pink' : 'orange'
+                          }
+                        >
+                          {item.status
+                            ? 'Đã hoàn thành'
+                            : item.timerExpired
+                              ? 'Hết giờ'
+                              : item.timerPaused
+                                ? 'Đã tạm dừng'
+                                : 'Chưa hoàn thành'}
                         </Badge>
                       </Td>
                       <Td>

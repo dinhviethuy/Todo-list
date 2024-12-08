@@ -53,8 +53,8 @@ function TodoReducer(state = initialState, action: Action) {
 
     case 'STOP_TIMER': {
       const newState: Payload[] = state.map((todo) => {
-        if (todo.id === action.id) {
-          return { ...todo, timerStarted: false }
+        if (todo.id === action.payload.id) {
+          return action.payload
         }
         return todo
       })
