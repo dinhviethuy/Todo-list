@@ -1,4 +1,4 @@
-import { Action, Payload } from '../constants/types'
+import { Action, Payload } from '../../constants/types'
 
 const initialState: Payload[] = localStorage.getItem('todo') ? JSON.parse(localStorage.getItem('todo') as string) : []
 
