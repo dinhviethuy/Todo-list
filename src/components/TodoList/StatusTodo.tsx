@@ -133,35 +133,41 @@ export const Status = (props: IProps) => {
   }
   return (
     <>
-      <Tooltip label={timerStarted ? 'Finish' : 'Play'}>
+      <Tooltip label={timerStarted ? '' : 'Play'}>
         {timerStarted || timerPaused ? (
           <>
             {timerPaused && (
-              <IconButton
-                variant='solid'
-                aria-label='Play todo'
-                icon={<FaCirclePlay />}
-                size='sm'
-                onClick={onOpenPlay}
-              />
+              <Tooltip label='Play'>
+                <IconButton
+                  variant='solid'
+                  aria-label='Play todo'
+                  icon={<FaCirclePlay />}
+                  size='sm'
+                  onClick={onOpenPlay}
+                />
+              </Tooltip>
             )}
             {timerStarted && (
               <Box className='flex gap-3 flex-wrap'>
-                <IconButton
-                  variant='solid'
-                  colorScheme='green'
-                  aria-label='Finish todo'
-                  icon={<CheckIcon />}
-                  size='sm'
-                  onClick={onOpenFinish}
-                />
-                <IconButton
-                  variant='solid'
-                  aria-label='Pause todo'
-                  icon={<FaCirclePause />}
-                  size='sm'
-                  onClick={onOpenPause}
-                />
+                <Tooltip label='Finish'>
+                  <IconButton
+                    variant='solid'
+                    colorScheme='green'
+                    aria-label='Finish todo'
+                    icon={<CheckIcon />}
+                    size='sm'
+                    onClick={onOpenFinish}
+                  />
+                </Tooltip>
+                <Tooltip label='Pause'>
+                  <IconButton
+                    variant='solid'
+                    aria-label='Pause todo'
+                    icon={<FaCirclePause />}
+                    size='sm'
+                    onClick={onOpenPause}
+                  />
+                </Tooltip>
               </Box>
             )}
           </>
