@@ -80,8 +80,8 @@ export const Status = (props: IProps) => {
     try {
       dispatch(StopTimer(todo))
       toast({
-        title: 'Start Timer Success',
-        description: "We've started your timer.",
+        title: 'Pause Timer Success',
+        description: "We've paused your timer.",
         status: 'success',
         duration: 2000,
         isClosable: true,
@@ -90,8 +90,8 @@ export const Status = (props: IProps) => {
     } catch (error) {
       console.error(error)
       toast({
-        title: 'Start Timer Error',
-        description: "We've encountered an error while starting your timer.",
+        title: 'Pause Timer Error',
+        description: "We've encountered an error while pausing your timer.",
         status: 'error',
         duration: 2000,
         isClosable: true,
